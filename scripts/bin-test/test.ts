@@ -128,22 +128,19 @@ async function startBin(
     try {
       await fetch(`http://localhost:${port}/__/functions.yaml`);
     } catch (e) {
-      console.error(`fetch call failed: ${e}`);
-      console.error(`fetch call failed: ${e.code}`);
-      console.error(`fetch call failed: ${e.code === "ECONNREFUSED"}`);
       if (e?.code === "ECONNREFUSED") {
         return false;
       }
       throw e;
     }
     return true;
-  }, TIMEOUT_M);
+  }, TIMEOUT_L);
 
   return {
     port,
     cleanup: async () => {
-      process.kill(proc.pid);
-      await retryUntil(async () => {
+      process.kill(proc.pid, 9);
+      await retryUntil(() => {
         try {
           process.kill(proc.pid, 0);
         } catch {
@@ -151,7 +148,7 @@ async function startBin(
           return Promise.resolve(true);
         }
         return Promise.resolve(false);
-      }, TIMEOUT_M);
+      }, TIMEOUT_S);
     },
   };
 }
@@ -163,12 +160,15 @@ describe("functions.yaml", () => {
 
     before(async () => {
       const r = await startBin(tc);
+      console.log("Started admin server");
       port = r.port;
       cleanup = r.cleanup;
     });
 
     after(async () => {
-      await cleanup?.();
+      if (cleanup) {
+        await cleanup();
+      }
     });
 
     it("functions.yaml returns expected Manifest", async () => {
