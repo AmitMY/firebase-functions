@@ -128,6 +128,7 @@ async function startBin(
     try {
       await fetch(`http://localhost:${port}/__/functions.yaml`);
     } catch (e) {
+      console.error(`fetch call failed: ${e}`);
       if (e?.code === "ECONNREFUSED") {
         return false;
       }
