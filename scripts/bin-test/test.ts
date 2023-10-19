@@ -114,6 +114,16 @@ async function startBin(
     throw new Error("Failed to start firebase functions");
   }
 
+  if (debug) {
+    proc.stdout?.on("data", (data: unknown) => {
+      console.log(`[${tc.name} stdout] ${data}`);
+    });
+
+    proc.stderr?.on("data", (data: unknown) => {
+      console.log(`[${tc.name} stderr] ${data}`);
+    });
+  }
+
   await retryUntil(async () => {
     try {
       await fetch(`http://localhost:${port}/__/functions.yaml`);
@@ -125,16 +135,6 @@ async function startBin(
     }
     return true;
   }, TIMEOUT_M);
-
-  if (debug) {
-    proc.stdout?.on("data", (data: unknown) => {
-      console.log(`[${tc.name} stdout] ${data}`);
-    });
-
-    proc.stderr?.on("data", (data: unknown) => {
-      console.log(`[${tc.name} stderr] ${data}`);
-    });
-  }
 
   return {
     port,
