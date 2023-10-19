@@ -95,7 +95,7 @@ async function retryUntil(
 
 async function startBin(
   tc: Testcase,
-  debug?: boolean
+  debug = true
 ): Promise<{ port: number; cleanup: () => Promise<void> }> {
   const getPort = promisify(portfinder.getPort) as () => Promise<number>;
   const port = await getPort();
