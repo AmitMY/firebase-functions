@@ -12,6 +12,9 @@ for f in scripts/bin-test/sources/*; do
     fi
 done
 
+# Make sure firebase-functions binary is executable
+chmod +x ./lib/bin/firebase-functions.js
+
 ## DEBUG
 ls -la scripts/bin-test/sources/commonjs/node_modules
 
